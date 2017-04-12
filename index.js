@@ -10,76 +10,35 @@ const counter = (state = 0, action) => {
 
 };
 
-expect(
-    counter(1, { type: 'INCREMENT'})
-).toEqual(2);
-
-/*********************************/
-
-//const { createStore } = Redux;
-
-const createStore = (reducer) => {
-    "use strict";
-
-    let state;
-    let listeners = [];
-
-    const dispatch = (action) => {
-        state = reducer(state, action);
-        listeners.forEach(listener => listener());
-    };
-
-    const subscribe = (listener) => {
-        listeners.push(listener);
-        return () => {
-            listeners = listeners.filter(l => l !== listener);
-        }
-    };
-
-    const getState = () => state;
-
-    dispatch({});
-
-    return { dispatch, subscribe, getState };
-};
+const { createStore } = Redux;
 
 const store = createStore(counter);
 
-console.log("Initial state: ", store.getState());
+store.dispatch({type: 'INCREMENT'});
 
-store.dispatch({ type: 'INCREMENT'});
-
-console.log("Final state: ", store.getState());
+const Counter = ({value, onIncrement, onDecrement}) => (
+    <div>
+        <h1>{value}</h1>
+        <button onClick={onIncrement}>+</button>
+        <button onClick={onDecrement}>-</button>
+    </div>
+);
 
 const render = () => {
     "use strict";
-    document.body.innerText = store.getState();
+
+    ReactDOM.render(
+        <Counter
+            value={store.getState()}
+            onIncrement={() => store.dispatch({type: 'INCREMENT'})}
+            onDecrement={() => store.dispatch({type: 'DECREMENT'})}
+        />,
+        document.getElementById('root')
+    );
 };
 
 store.subscribe(render);
-
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-store.dispatch({ type: 'INCREMENT'});
-
-setTimeout(() => {
-    store.dispatch({ type: 'INCREMENT'})
-}, 1000);
-
-document.addEventListener('click', () => {
-    "use strict";
-    store.dispatch({ type: 'INCREMENT'})
-});
+render();
 
 /*********************************/
 
