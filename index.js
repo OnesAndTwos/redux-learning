@@ -1,9 +1,14 @@
-const counter = (state = 0, action) => {
+const counter = (state = [0], action) => {
+    "use strict";
     switch (action.type) {
         case 'INCREMENT':
-            return state + 1;
-        case "DECREMENT":
-            return state - 1;
+            return incrementCounter(state, action.index);
+        case 'DECREMENT':
+            return decrementCounter(state, action.index);
+        case 'ADD_COUNTER':
+            return addCounter(state);
+        case 'REMOVE_COUNTER':
+            return removeCounter(state);
         default:
             return state;
     }
@@ -17,11 +22,10 @@ const addCounter = (list) => {
     ]
 };
 
-const removeCounter = (list, index) => {
+const removeCounter = (list) => {
     "use strict";
     return [
-        ...list.slice(0, index),
-        ...list.slice(index + 1)
+        ...list.slice(0, list.length - 1)
     ]
 };
 
@@ -34,20 +38,31 @@ const incrementCounter = (list, index) => {
     ]
 };
 
-const toggleTodo = (todo) => {
+const decrementCounter = (list, index) => {
     "use strict";
-    todo.completed = !todo.completed
-    return todo;
+    return [
+        ...list.slice(0, index),
+        ...[list[index] - 1],
+        ...list.slice(index + 1)
+    ]
 };
 
 const { createStore } = Redux;
 const store = createStore(counter);
 
-const Counter = ({value, onIncrement, onDecrement}) => (
+const Counter = ({values, onIncrement, onDecrement, onAddCounter, onRemoveCounter}) => (
     <div>
-        <h1>{value}</h1>
-        <button onClick={onIncrement}>+</button>
-        <button onClick={onDecrement}>-</button>
+        {[...values].map((value, index) => (
+            <div key={index}>
+                <h1>{value}</h1>
+                <button onClick={() => store.dispatch({type: 'INCREMENT', index})}>+</button>
+                <button onClick={() => store.dispatch({type: 'DECREMENT', index})}>-</button>
+            </div>
+        ))}
+        <div>
+            <button onClick={onAddCounter}>Add counter</button>
+            <button onClick={onRemoveCounter}>Remove counter</button>
+        </div>
     </div>
 );
 
@@ -56,9 +71,9 @@ const render = () => {
 
     ReactDOM.render(
         <Counter
-            value={store.getState()}
-            onIncrement={() => store.dispatch({type: 'INCREMENT'})}
-            onDecrement={() => store.dispatch({type: 'DECREMENT'})}
+            values={store.getState()}
+            onAddCounter={() => store.dispatch({type: 'ADD_COUNTER'})}
+            onRemoveCounter={() => store.dispatch({type: 'REMOVE_COUNTER'})}
         />,
         document.getElementById('root')
     );
@@ -69,12 +84,6 @@ store.subscribe(render);
 render();
 
 /*********************************/
-
-const testCounter = () => {
-    expect(
-        counter(1, {type: 'INCREMENT'})
-    ).toEqual(2);
-};
 
 const testAddCounter = () => {
     var beforeList = [1, 2];
@@ -92,10 +101,9 @@ const testRemoveCounter = () => {
     deepFreeze(beforeList);
 
     expect(
-        removeCounter(beforeList, 1)
-    ).toEqual([1, 4]);
+        removeCounter(beforeList)
+    ).toEqual([1, 2]);
 };
-
 
 const testIncrementCounter = () => {
     var beforeList = [1, 2, 4];
@@ -107,27 +115,10 @@ const testIncrementCounter = () => {
     ).toEqual([1, 3, 4]);
 };
 
-const testToggleTodo = () => {
-    var toDoBefore = {
-        id: 0, text: 'Learn redux',
-        completed: false
-    };
-
-    expect(
-        toggleTodo(toDoBefore)
-    ).toEqual({
-        id: 0, text: 'Learn redux',
-        completed: true
-    });
-};
-
 [
-
-    testCounter,
     testAddCounter,
     testRemoveCounter,
-    testIncrementCounter,
-    testToggleTodo
+    testIncrementCounter
 
 ].forEach(t => t.call());
 
