@@ -71,7 +71,7 @@ const store = createStore(todoApp);
 
 const render = () => {
     ReactDOM.render(
-        <TodoApp todos={store.getState().todos}/>,
+        <TodoApp {...store.getState()} />,
         document.getElementById("todo")
     )
 };
@@ -80,13 +80,47 @@ const { Component } = React;
 
 let nextTodoId = 0;
 
-/*
 
- */
+const getVisibleTodos = (todos, filter) => {
+    switch (filter) {
+        case 'SHOW_ALL':
+            return todos;
+        case 'SHOW_COMPLETED':
+            return todos.filter(t => t.completed);
+        case 'SHOW_ACTIVE':
+            return todos.filter(t => !t.completed);
+        default:
+            return todos;
+    }
+
+};
+
+const FilterLink = ({filter, currentFilter, children}) => {
+    if(currentFilter === filter) {
+        return <span>{children}</span>
+    }
+
+    return (
+        <a href='#'
+           onClick={(e) => {
+            e.preventDefault();
+            store.dispatch({
+                type: 'SET_VISIBILITY_FILTER',
+                filter
+            });
+           }}>{children}</a>
+    )
+};
+
 
 
 class TodoApp extends Component {
+
     render() {
+
+        const { todos, visibilityFilter } = this.props;
+        const visibleTodos = getVisibleTodos(todos, visibilityFilter);
+
         return (
             <div>
                 <input ref={ node => this.input = node }/>
@@ -99,24 +133,29 @@ class TodoApp extends Component {
                 });
                 this.input.value= '';
 
-                }}>Add kjlkjlk
+                }}>Add Todo
                 </button>
                 <ul>
-                    {this.props.todos.map(todo =>
+                    {visibleTodos.map(todo =>
                         <li key={todo.id}
-                            onClick={
-                            () => { store.dispatch({
-                                type: 'TOGGLE_TODO',
-                                id: todo.id
-                            });}}
+                            onClick={() => { store.dispatch({
+                                    type: 'TOGGLE_TODO',
+                                    id: todo.id
+                                });
+                            }}
                             style={{ textDecoration: todo.completed ? 'line-through': 'none'
-                        }}>
-                            {todo.text}
-                        </li>
+                        }}>{todo.text}</li>
                     )}
                 </ul>
+                <p>
+                    Show: { ' ' }
+                        <FilterLink currentFilter={visibilityFilter} filter="SHOW_ALL">All</FilterLink>{ ' ' }
+                        <FilterLink currentFilter={visibilityFilter} filter="SHOW_ACTIVE">Active</FilterLink>{ ' ' }
+                        <FilterLink currentFilter={visibilityFilter} filter="SHOW_COMPLETED">Completed</FilterLink>
+                </p>
             </div>
         );
+
     }
 }
 
