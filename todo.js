@@ -75,27 +75,10 @@ const getVisibleTodos = (todos, filter) => {
 
 };
 
-const FilterLink = ({filter, currentFilter, children}) => {
-    if (currentFilter === filter) {
-        return <span>{children}</span>
-    }
-
-    return (
-        <a href='#'
-           onClick={(e) => {
-            e.preventDefault();
-            store.dispatch({
-                type: 'SET_VISIBILITY_FILTER',
-                filter
-            });
-           }}>{children}</a>
-    )
-};
-
 const onClickTodo = (id) => {
-  store.dispatch({
-     type: 'TOGGLE_TODO', id
-  });
+    store.dispatch({
+        type: 'TOGGLE_TODO', id
+    });
 };
 
 const Todo = ({onClick, completed, text}) => (
@@ -105,10 +88,54 @@ const Todo = ({onClick, completed, text}) => (
 const TodoList = ({todos, onTodoClick}) => (
     <ul>
         {
-            todos.map(todo => (<Todo key={todo.id} {...todo} onClick={() => onClickTodo(todo.id)} />))
+            todos.map(todo => (<Todo key={todo.id} {...todo} onClick={() => onClickTodo(todo.id)}/>))
         }
     </ul>
 );
+
+
+
+const AddTodo = ({onAddClick}) => {
+    let input;
+
+    return (
+        <div>
+            <input ref={ node => input = node }/>
+            <button onClick={() => {
+                    onAddClick(input.value);
+                    input.value= '';
+                }}>
+                Add Todo
+            </button>
+        </div>
+    )
+};
+
+const Footer = ({visibilityFilter, onFilterClick}) => {
+    return (
+        <p>
+            Show: { ' ' }
+            <FilterLink filter="SHOW_ALL" currentFilter={visibilityFilter} onFilterClick={onFilterClick}>All</FilterLink>{ ' ' }
+            <FilterLink filter="SHOW_ACTIVE" currentFilter={visibilityFilter} onFilterClick={onFilterClick}>Active</FilterLink>{ ' ' }
+            <FilterLink filter="SHOW_COMPLETED" currentFilter={visibilityFilter} onFilterClick={onFilterClick}>Completed</FilterLink>
+        </p>
+    )
+};
+
+const FilterLink = ({filter, currentFilter, children, onFilterClick}) => {
+    if (currentFilter === filter) {
+        return <span>{children}</span>
+    }
+
+    return (
+        <a href='#'
+           onClick={(e) => {
+            e.preventDefault();
+            onFilterClick(filter);
+           }}>{children}</a>
+    )
+};
+
 
 class TodoApp extends Component {
 
@@ -119,32 +146,27 @@ class TodoApp extends Component {
 
         return (
             <div>
-                <input ref={ node => this.input = node }/>
-                <button onClick={() => {
-
-                    store.dispatch({
-                        type: 'ADD_TODO',
-                        text: this.input.value,
-                        id: nextTodoId++
-                    });
-                    this.input.value= '';
-
-                }}>Add Todo
-                </button>
+                <AddTodo
+                    onAddClick={(text) =>
+                        store.dispatch({
+                            type: 'ADD_TODO',
+                            text: text,
+                            id: nextTodoId++
+                        })
+                    } />
 
                 <TodoList
                     todos={visibleTodos}
-                    onTodoClick={
-                        id => store.dispatch({type: 'TOGGLE_TODO',id})
-                    }
-                />
+                    onTodoClick={id => store.dispatch({type: 'TOGGLE_TODO',id})} />
 
-                <p>
-                    Show: { ' ' }
-                    <FilterLink currentFilter={visibilityFilter} filter="SHOW_ALL">All</FilterLink>{ ' ' }
-                    <FilterLink currentFilter={visibilityFilter} filter="SHOW_ACTIVE">Active</FilterLink>{ ' ' }
-                    <FilterLink currentFilter={visibilityFilter} filter="SHOW_COMPLETED">Completed</FilterLink>
-                </p>
+                <Footer
+                    visibilityFilter={visibilityFilter}
+                    onFilterClick={filter => store.dispatch({
+                        type: 'SET_VISIBILITY_FILTER',
+                        filter
+                    })
+                } />
+
             </div>
         );
     }
