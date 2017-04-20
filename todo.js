@@ -52,7 +52,6 @@ const todoApp = combineReducers({
 const { createStore } = Redux;
 const store = createStore(todoApp);
 
-const { Component } = React;
 let nextTodoId = 0;
 
 const render = () => ReactDOM.render(
@@ -94,7 +93,6 @@ const TodoList = ({todos, onTodoClick}) => (
 );
 
 
-
 const AddTodo = ({onAddClick}) => {
     let input;
 
@@ -115,9 +113,12 @@ const Footer = ({visibilityFilter, onFilterClick}) => {
     return (
         <p>
             Show: { ' ' }
-            <FilterLink filter="SHOW_ALL" currentFilter={visibilityFilter} onFilterClick={onFilterClick}>All</FilterLink>{ ' ' }
-            <FilterLink filter="SHOW_ACTIVE" currentFilter={visibilityFilter} onFilterClick={onFilterClick}>Active</FilterLink>{ ' ' }
-            <FilterLink filter="SHOW_COMPLETED" currentFilter={visibilityFilter} onFilterClick={onFilterClick}>Completed</FilterLink>
+            <FilterLink filter="SHOW_ALL" currentFilter={visibilityFilter}
+                        onFilterClick={onFilterClick}>All</FilterLink>{ ' ' }
+            <FilterLink filter="SHOW_ACTIVE" currentFilter={visibilityFilter}
+                        onFilterClick={onFilterClick}>Active</FilterLink>{ ' ' }
+            <FilterLink filter="SHOW_COMPLETED" currentFilter={visibilityFilter}
+                        onFilterClick={onFilterClick}>Completed</FilterLink>
         </p>
     )
 };
@@ -136,47 +137,52 @@ const FilterLink = ({filter, currentFilter, children, onFilterClick}) => {
     )
 };
 
-
-class TodoApp extends Component {
-
-    render() {
-
-        const { todos, visibilityFilter } = this.props;
-        const visibleTodos = getVisibleTodos(todos, visibilityFilter);
-
-        return (
-            <div>
-                <AddTodo
-                    onAddClick={(text) =>
-                        store.dispatch({
+const TodoApp = ({ todos, visibilityFilter }) => {
+    return (
+        <div>
+            <AddTodo
+                onAddClick={
+                        text => store.dispatch({
                             type: 'ADD_TODO',
                             text: text,
                             id: nextTodoId++
                         })
-                    } />
+                    }
+            />
 
-                <TodoList
-                    todos={visibleTodos}
-                    onTodoClick={id => store.dispatch({type: 'TOGGLE_TODO',id})} />
+            <TodoList
+                todos= {
+                    getVisibleTodos(todos, visibilityFilter)
+                }
+                onTodoClick={
+                        id => store.dispatch({
+                            type: 'TOGGLE_TODO',
+                            id
+                        })
+                    }
+            />
 
-                <Footer
-                    visibilityFilter={visibilityFilter}
-                    onFilterClick={filter => store.dispatch({
-                        type: 'SET_VISIBILITY_FILTER',
-                        filter
-                    })
-                } />
+            <Footer
+                visibilityFilter={visibilityFilter}
+                onFilterClick={
+                        filter => store.dispatch({
+                            type: 'SET_VISIBILITY_FILTER',
+                            filter
+                        })
+                    }
+            />
 
-            </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 store.subscribe(render);
 
 render();
 
 /*********************************/
+
+const deepFreeze = require('deep-freeze');
 
 const testAddTodo = () => {
     const stateBefore = [];

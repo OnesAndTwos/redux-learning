@@ -84,6 +84,8 @@ render();
 
 /*********************************/
 
+const deepFreeze = require('deep-freeze');
+
 const testAddCounter = () => {
     var beforeList = [1, 2];
 
