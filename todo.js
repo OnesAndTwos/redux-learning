@@ -222,24 +222,6 @@ FilterLink.contextTypes = {
     store: React.PropTypes.object
 };
 
-class Provider extends Component {
-
-    getChildContext() {
-        return {
-            store: this.props.store
-        }
-    }
-
-    render() {
-        return this.props.children;
-    }
-}
-
-Provider.childContextTypes = {
-    store: React.PropTypes.object
-};
-
-
 /*** REACT MAIN ***/
 
 const TodoApp = () => {
@@ -252,6 +234,7 @@ const TodoApp = () => {
     )
 };
 
+const { Provider } = ReactRedux;
 const { createStore } = Redux;
 
 ReactDOM.render(
