@@ -7,7 +7,7 @@ import { createStore } from 'redux';
 import todoApp from './reducers/todoApp';
 import TodoApp from './components/TodoApp';
 
-let store = createStore(todoApp);
+let store = createStore(todoApp, {});
 
 render(
     <Provider store={store}>
