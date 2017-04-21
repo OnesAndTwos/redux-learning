@@ -1,6 +1,6 @@
 import todo from './todo';
 
-const todos = (state = [], action) => {
+export default (state = [], action) => {
 
     switch (action.type) {
         case 'ADD_TODO':
@@ -12,5 +12,3 @@ const todos = (state = [], action) => {
     }
 
 };
-
-export default todos;
