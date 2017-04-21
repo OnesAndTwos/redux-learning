@@ -1,2 +1,1 @@
-import './counter';
-import './todo';
+import './src/todo';
