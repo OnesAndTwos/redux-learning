@@ -1,27 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
+import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 
 import todoApp from './reducers/todoApp';
-import VisibleTodoList from './containers/VisibleTodoList';
+import TodoApp from './components/TodoApp';
 
-import AddTodo from './containers/AddTodo';
-import Footer from './containers/Footer';
+let store = createStore(todoApp);
 
-const TodoApp = () => {
-    return (
-        <div>
-            <AddTodo />
-            <VisibleTodoList />
-            <Footer />
-        </div>
-    )
-};
-
-ReactDOM.render(
-    <Provider store={createStore(todoApp)}>
+render(
+    <Provider store={store}>
         <TodoApp />
     </Provider>,
     document.getElementById("todo")
