@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { setVisibilityFilter } from './../actions/index';
 
-const Link = ({active, children, onClick}) => {
+const Link = ({active, onClick, children}) => {
     if (active) {
         return <span>{children}</span>
     }

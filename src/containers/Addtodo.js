@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { addTodo } from './../actions/index';
 
-export default connect()(({ dispatch }) => {
+const AddTodo = ({ dispatch }) => {
     let input;
 
     return (
@@ -17,4 +17,6 @@ export default connect()(({ dispatch }) => {
             </button>
         </div>
     )
-});
+};
+
+export default connect()(AddTodo);
