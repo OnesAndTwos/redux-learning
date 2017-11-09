@@ -1,10 +1,10 @@
 import React from 'react';
 
-import VisibleTodoList from './../containers/VisibleTodoList';
-import AddTodo from './../containers/AddTodo';
-import Footer from './../containers/Footer';
+import VisibleTodoList from './VisibleTodoList';
+import AddTodo from './AddTodo';
+import Footer from './Footer';
 
-export default () => {
+export default ({match}) => {
     return (
         <div>
             <AddTodo />

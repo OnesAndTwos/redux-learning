@@ -1,19 +1,9 @@
 import React from 'react';
-
 import { render } from 'react-dom';
-import { Provider } from 'react-redux';
-import { createStore } from 'redux';
 
-import todoApp from './reducers/todoApp';
-import TodoApp from './components/TodoApp';
+import Root from './components/Root';
+import configureStore from './configureStore';
 
-const preloadedState = window.__PRELOADED_STATE__;
-delete window.__PRELOADED_STATE__;
-const store = createStore(todoApp, preloadedState);
+const store = configureStore();
 
-render(
-    <Provider store={store}>
-        <TodoApp />
-    </Provider>,
-    document.getElementById("todo")
-);
+render(<Root store={store} />, document.getElementById('todo'));
